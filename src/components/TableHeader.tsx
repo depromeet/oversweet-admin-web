@@ -1,12 +1,14 @@
 import { TableCell, TableHead, TableRow } from "@mui/material";
 
-const headerLabel = ['id', '이름', '이미지'];
+interface Props {
+  headers: string[];
+}
 
-const FranchiseTableHeader = () => {
+const TableHeader = ({ headers }: Props) => {
   return (
     <TableHead>
       <TableRow>
-        {headerLabel.map((label) =>
+        {headers.map((label) =>
           <TableCell key={label}>{label}</TableCell>
         )}
       </TableRow>
@@ -14,4 +16,4 @@ const FranchiseTableHeader = () => {
   )
 }
 
-export default FranchiseTableHeader;
+export default TableHeader;
