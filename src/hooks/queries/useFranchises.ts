@@ -3,7 +3,7 @@ import { useQuery } from "react-query";
 import * as queryKeys from "@/constant/queryKeys";
 import { IFranchise } from "@/types";
 
-const fetchFranchisesData = async () => {
+const getFranchises = async () => {
   try {
     const { data } = await api.get<IFranchise[]>('/franchises');
     return data;
@@ -12,8 +12,8 @@ const fetchFranchisesData = async () => {
   }
 }
 
-const useFranchisesData = () => {
-  return useQuery([queryKeys.FRANCHISES], fetchFranchisesData);
+const useFranchises = () => {
+  return useQuery([queryKeys.FRANCHISES], getFranchises);
 }
 
-export default useFranchisesData;
+export default useFranchises;
