@@ -16,3 +16,10 @@ export interface IDrink {
   imageUrl: string | null;
   category: DrinkCategory;
 }
+
+export interface IGetDrinksResponse {
+  data: IDrink[];
+  hasNext: boolean;
+  totalDataCount: number;
+  totalPage: number;
+}
