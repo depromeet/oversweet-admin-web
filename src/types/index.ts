@@ -1,7 +1,7 @@
 export interface IFranchise {
   id: number,
   name: string,
-  ImageUrl: string,
+  imageUrl: string,
 }
 
 type DrinkCategory = 'AMERICANO' | 'ESPRESSO|' | 'COLDBREW' | 'SHAKE' | 'ADE' | 'LATTE' | 'TEA' | 'SMOOTHIE';

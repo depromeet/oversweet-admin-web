@@ -2,7 +2,7 @@ import { IFranchise } from "@/types";
 import { TableCell, TableRow } from "@mui/material"
 import axios from "axios";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "react-query";
 import * as queryKeys from '../constant/queryKeys';
 import api from "@/services/api";
@@ -16,10 +16,11 @@ const FranchiseTableRow = ({ data }: Props) => {
   const router = useRouter();
   const { id, name } = data;
   const queryClient = useQueryClient();
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    if (data.ImageUrl) {
-      setImageUrl(data.ImageUrl);
+    if (data.imageUrl) {
+      setImageUrl(data.imageUrl);
     }
   }, [data])
 
@@ -54,6 +55,11 @@ const FranchiseTableRow = ({ data }: Props) => {
         });
         queryClient.invalidateQueries([queryKeys.FRANCHISES]);
         setImageUrl(url.split('?')[0]);
+
+        if (inputRef.current) {
+          inputRef.current.value = '';
+        }
+        setSelectedImage(null);
       } catch (error) {
         console.error('Error uploading image:', error);
       }
@@ -72,7 +78,7 @@ const FranchiseTableRow = ({ data }: Props) => {
         }
       </TableCell>
       <TableCell>
-        <input type="file" accept="image/*" onChange={handleImageInput} />
+        <input type="file" accept="image/*" onChange={handleImageInput} ref={inputRef} />
         <button onClick={handleEditFranchiseImage}>Upload Image</button>
       </TableCell>
       <TableCell>
