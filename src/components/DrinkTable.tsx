@@ -4,7 +4,7 @@ import TableHeader from './TableHeader';
 import DrinkTableRow from './DrinkTableRow';
 import { IDrink } from '@/types';
 
-const headerLabel = ['id', '음료명', '사이즈(ml)', '당류(g)', '칼로리(kcal)', '이미지', '카테고리'];
+const headerLabel = ['id', '음료명', '사이즈(ml)', '당류(g)', '칼로리(kcal)', '이미지', '카테고리', ''];
 
 interface Props {
   data: IDrink[];
