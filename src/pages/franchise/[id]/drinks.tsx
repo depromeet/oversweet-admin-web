@@ -3,6 +3,7 @@ import useDrinks from "@/hooks/queries/useDrinks";
 import { Pagination } from "@mui/material";
 import { useRouter } from "next/router";
 import { ChangeEvent, useState } from "react";
+import styles from './index.module.css';
 
 const DrinkList = () => {
   const router = useRouter();
@@ -16,9 +17,9 @@ const DrinkList = () => {
 
   if (drinksQuery.data) {
     return (
-      <div>
+      <div className={styles.container}>
         <DrinkTable data={drinksQuery.data.data} />
-        <Pagination count={drinksQuery.data.totalPage} page={currentPage} onChange={handlePageChange} />
+        <Pagination count={drinksQuery.data.totalPage} page={currentPage} onChange={handlePageChange} sx={{ marginTop: 4 }} />
       </div>
     )
   }
