@@ -25,6 +25,7 @@ const useImageUpload = () => {
   const [imageInput, setImageInput] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState<string>();
   const inputRef = useRef<HTMLInputElement>(null);
+  const previewImage = !imageInput ? null : URL.createObjectURL(imageInput);
 
   const handleImageInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files.length > 0) {
@@ -54,7 +55,7 @@ const useImageUpload = () => {
     }
   }
 
-  return { handleImageInput, initImageUrl, uploadImage, imageUrl, inputRef }
+  return { handleImageInput, initImageUrl, uploadImage, imageUrl, inputRef, previewImage }
 }
 
 export default useImageUpload;
