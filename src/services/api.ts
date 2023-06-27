@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const BASE_URL = 'http://oversweet-admin.ap-northeast-2.elasticbeanstalk.com/api';
+export const BASE_URL = 'https://oversweet-admin.shop/api';
 
 const api = axios.create({
   baseURL: BASE_URL,
