@@ -1,10 +1,10 @@
+import { drinkCategoryKeys } from "@/constant/mappingTable";
+
 export interface IFranchise {
   id: number,
   name: string,
   imageUrl: string,
 }
-
-type DrinkCategory = 'AMERICANO' | 'ESPRESSO|' | 'COLDBREW' | 'SHAKE' | 'ADE' | 'LATTE' | 'TEA' | 'SMOOTHIE';
 
 export interface IDrink {
   id: number;
@@ -14,8 +14,11 @@ export interface IDrink {
   sugar: number;
   calorie: number;
   imageUrl: string | null;
-  category: DrinkCategory;
+  category: drinkCategoryKeys;
+  isMinimum: boolean;
 }
+
+export type TCreateDrinkDto = Omit<IDrink, 'id' | 'franchiseName'>;
 
 export interface IGetDrinksResponse {
   data: IDrink[];

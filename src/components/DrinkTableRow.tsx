@@ -1,106 +1,142 @@
-import useImageUpload from "@/hooks/useImageUpload";
-import { IDrink } from "@/types";
-import { TableRow, TableCell } from "@mui/material";
+import useImageUpload, { uploadImageToS3 } from "@/hooks/useImageUpload";
+import { IDrink, TCreateDrinkDto } from "@/types";
+import { TableRow, TableCell, Checkbox } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
 import * as queryKeys from '../constant/queryKeys';
 import Image from "next/image";
 import styles from './DrinkTableRow.module.css';
-
+import CategorySelector from "./CategorySelector";
+import api from "@/services/api";
+import { drinkCategoryKeys, drinkCategoryMap } from "@/constant/mappingTable";
 interface Props {
-  data: IDrink;
+  data?: IDrink;
+  isCreating?: boolean;
+  handleCreate?: (data: TCreateDrinkDto) => void;
+  handleCancelCreate?: () => void;
+  refetch?: () => void;
 }
 
-const DrinkTableRow = ({ data }: Props) => {
-  const { imageUrl, initImageUrl, inputRef, previewImage, handleImageInput, uploadImage } = useImageUpload();
-  const queryClient = useQueryClient();
+const DrinkTableRow = ({ data, isCreating, handleCreate, handleCancelCreate, refetch }: Props) => {
+  const { imageUrl, initImageUrl, imageInput, inputRef, previewImage, handleImageInput, uploadImage } = useImageUpload();
   const [name, setName] = useState('');
   const [size, setSize] = useState(0);
   const [sugar, setSugar] = useState(0);
   const [calorie, setCalorie] = useState(0);
+  const [category, setCategory] = useState('');
+  const [isMinimum, setIsMinimum] = useState(false);
 
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(isCreating ?? false);
 
-  const { mutate } = useMutation(async () => {
-    await fetch(`/api/drinks/${data.id}`, {
-      method: 'PUT',
-      body: JSON.stringify({
+  const { mutate: updateDrink } = useMutation(async () => {
+    if (data) {
+      if (imageInput) {
+        await uploadImage(`/drinks/${data.id}`);
+      }
+      await api.put(`/drinks/${data.id}`, {
         name,
         size,
         sugar,
         calorie,
-      }),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+        category,
+        isMinimum,
+      });
+    }
+  }, {
+    onSuccess: () => {
+      refetch?.();
+    },
+    onError: (error: Error) => {
+      console.log(error)
+      alert(`음료의 사이즈, 칼로리, 당 정보는 0 이하일 수 없습니다.`);
+    }
   })
 
   useEffect(() => {
-    if (data.imageUrl) {
-      initImageUrl(data.imageUrl);
+    if (data) {
+      if (data.imageUrl) {
+        initImageUrl(data.imageUrl);
+      }
+      setName(data.name);
+      setSize(data.size);
+      setSugar(data.sugar);
+      setCalorie(data.calorie);
+      setCategory(data.category);
+      setIsMinimum(data.isMinimum);
     }
-    setName(data.name);
-    setSize(data.size);
-    setSugar(data.sugar);
-    setCalorie(data.calorie);
   }, [])
 
-  const handleEditDrinkImage = async () => {
-    try {
-      await uploadImage(`/drinks/${data.id}`);
-      queryClient.invalidateQueries([queryKeys.DRINKS])
-    } catch (e) {
-      throw e;
+  useEffect(() => {
+    if (isCreating) {
+      setCategory('AMERICANO');
     }
-  }
+  }, [isCreating])
 
   const edit = () => {
     setIsEditing(true);
   }
 
-  const save = () => {
+  const update = () => {
     setIsEditing(false);
-    try {
-      mutate();
-      handleEditDrinkImage();
-    } catch (e) {
-      alert("다시 시도해주세요!");
-    }
+    updateDrink();
   }
 
-  const onClick = () => {
-    if (isEditing) {
-      save();
+  const handleSave = async () => {
+    if (isCreating && handleCreate) {
+      const uploadedImgUrl = imageInput && await uploadImageToS3(imageInput) || '';
+      handleCreate({
+        name,
+        size,
+        sugar,
+        calorie,
+        isMinimum,
+        category: category as drinkCategoryKeys,
+        imageUrl: uploadedImgUrl,
+      })
+    }
+    else if (isEditing) {
+      update();
     }
     else {
       edit();
     }
   }
 
+  const handleCancel = () => {
+    if (isCreating && handleCancelCreate) {
+      handleCancelCreate();
+    } else {
+      setIsEditing(false);
+    }
+  }
+
   return (
-    <TableRow>
-      <TableCell>{data.id}</TableCell>
+    <TableRow sx={{ height: '180px' }}>
+      <TableCell width={10}>{data ? data.id : ''}</TableCell>
       <TableCell>
         <input value={name} disabled={!isEditing} onChange={(e) => {
           setName(e.target.value)
         }} />
       </TableCell>
       <TableCell>
-        <input value={size} type="number" disabled={!isEditing} onChange={(e) => { setSize(Number(e.target.value)) }} />
+        <input value={size} type="number" disabled={!isEditing} onChange={(e) => { setSize(Number(e.target.value)) }} style={{ width: '50px' }} />
       </TableCell>
       <TableCell>
-        <input value={sugar} type="number" disabled={!isEditing} onChange={(e) => { setSugar(Number(e.target.value)) }} />
+        <input value={sugar} type="number" disabled={!isEditing} onChange={(e) => { setSugar(Number(e.target.value)) }} style={{ width: '50px' }} />
       </TableCell>
       <TableCell>
-        <input value={calorie} type="number" disabled={!isEditing} onChange={(e) => { setCalorie(Number(e.target.value)) }} />
+        <input value={calorie} type="number" disabled={!isEditing} onChange={(e) => { setCalorie(Number(e.target.value)) }} style={{ width: '50px' }} />
       </TableCell>
       <TableCell>
         <div>
-          {imageUrl
-            ?
-            <Image src={imageUrl} width={100} height={100} alt='' />
-            : '이미지 없음'
+          {!isEditing &&
+            <div>
+              {imageUrl
+                ?
+                <Image src={imageUrl} width={100} height={100} alt='' />
+                : '이미지 없음'
+              }
+            </div>
           }
           {
             isEditing &&
@@ -111,9 +147,24 @@ const DrinkTableRow = ({ data }: Props) => {
           }
         </div>
       </TableCell>
-      <TableCell>{data.category}</TableCell>
       <TableCell>
-        <button onClick={onClick}>{isEditing ? '저장하기' : '수정하기'}</button>
+        {
+          isEditing
+            ?
+            <CategorySelector
+              selectedCategory={category}
+              handleChange={(value) => setCategory(value)}
+            />
+            :
+            data ? drinkCategoryMap[data.category] : ''
+        }
+      </TableCell>
+      <TableCell>
+        <Checkbox checked={isMinimum} disabled={!isEditing} onChange={(e) => setIsMinimum(e.target.checked)} />
+      </TableCell>
+      <TableCell>
+        <button onClick={handleSave}>{(isEditing || isCreating) ? '저장' : '수정'}</button>
+        {(isEditing || isCreating) && <button onClick={handleCancel}>취소</button>}
       </TableCell>
     </TableRow>
   )
