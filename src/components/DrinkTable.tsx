@@ -45,7 +45,7 @@ function DrinkTable({ data, refetch }: Props) {
           <TableBody>
             {isCreating && <DrinkTableRow isCreating handleCreate={createNewDrink} handleCancelCreate={cancelCreate} refetch={refetch} />}
             {data?.map((d) =>
-              <DrinkTableRow key={d.id} data={d} />
+              <DrinkTableRow key={d.id} data={d} refetch={refetch} />
             )}
           </TableBody>
         </Table>

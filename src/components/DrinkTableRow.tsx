@@ -44,6 +44,7 @@ const DrinkTableRow = ({ data, isCreating, handleCreate, handleCancelCreate, ref
     }
   }, {
     onSuccess: () => {
+      console.log('하하')
       refetch?.();
     },
     onError: (error: Error) => {
