@@ -18,8 +18,11 @@ const DrinkList = () => {
   if (drinksQuery.data) {
     return (
       <div className={styles.container}>
-        <DrinkTable data={drinksQuery.data.data} />
-        <Pagination count={drinksQuery.data.totalPage} page={currentPage} onChange={handlePageChange} sx={{ marginTop: 4 }} />
+        <h3>음료 목록</h3>
+        <div className={styles.wrapper}>
+          <DrinkTable data={drinksQuery.data.data} currentPage={currentPage} refetch={drinksQuery.refetch} />
+          <Pagination count={drinksQuery.data.totalPage} page={currentPage} onChange={handlePageChange} sx={{ marginTop: 4 }} />
+        </div>
       </div>
     )
   }

@@ -1,8 +1,7 @@
 import { IFranchise } from "@/types";
 import { TableCell, TableRow } from "@mui/material"
-import axios from "axios";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect } from "react";
 import { useQueryClient } from "react-query";
 import * as queryKeys from '../constant/queryKeys';
 import Image from "next/image";
@@ -47,9 +46,9 @@ const FranchiseTableRow = ({ data }: Props) => {
           : '이미지 없음'
         }
       </TableCell>
-      <TableCell>
+      <TableCell width={120}>
         <input type="file" accept="image/*" onChange={handleImageInput} ref={inputRef} />
-        <button onClick={handleEditFranchiseImage}>Upload Image</button>
+        <button onClick={handleEditFranchiseImage}>이미지 저장</button>
       </TableCell>
       <TableCell>
         <button onClick={moveToDrinkList}>음료 리스트</button>

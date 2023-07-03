@@ -2,7 +2,7 @@ import api from "@/services/api";
 import axios from "axios";
 import { useRef, useState } from "react";
 
-const uploadImageToS3 = async (image: File) => {
+export const uploadImageToS3 = async (image: File) => {
   const formData = new FormData();
   formData.append('image', image);
 
@@ -55,7 +55,7 @@ const useImageUpload = () => {
     }
   }
 
-  return { handleImageInput, initImageUrl, uploadImage, imageUrl, inputRef, previewImage }
+  return { handleImageInput, initImageUrl, imageInput, uploadImage, imageUrl, inputRef, previewImage }
 }
 
 export default useImageUpload;
