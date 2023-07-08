@@ -17,6 +17,7 @@ const TableHeader = ({ headers, addNewRow }: Props) => {
           <TableCell>
             <button onClick={addNewRow}>추가</button>
           </TableCell>}
+        {addNewRow && <TableCell>삭제</TableCell>}
       </TableRow>
     </TableHead>
   )

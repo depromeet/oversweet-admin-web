@@ -3,7 +3,6 @@ import { IDrink, TCreateDrinkDto } from "@/types";
 import { TableRow, TableCell, Checkbox } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "react-query";
-import * as queryKeys from '../constant/queryKeys';
 import Image from "next/image";
 import styles from './DrinkTableRow.module.css';
 import CategorySelector from "./CategorySelector";
@@ -44,12 +43,19 @@ const DrinkTableRow = ({ data, isCreating, handleCreate, handleCancelCreate, ref
     }
   }, {
     onSuccess: () => {
-      console.log('하하')
       refetch?.();
     },
     onError: (error: Error) => {
       console.log(error)
       alert(`음료의 사이즈, 칼로리, 당 정보는 0 이하일 수 없습니다.`);
+    }
+  })
+
+  const { mutate: deleteDrink } = useMutation(async () => {
+    await api.delete(`/drinks/${data?.id}`);
+  }, {
+    onSuccess: () => {
+      refetch?.();
     }
   })
 
@@ -111,6 +117,10 @@ const DrinkTableRow = ({ data, isCreating, handleCreate, handleCancelCreate, ref
     }
   }
 
+  const handleDelete = () => {
+    deleteDrink();
+  }
+
   return (
     <TableRow sx={{ height: '180px' }}>
       <TableCell width={10}>{data ? data.id : ''}</TableCell>
@@ -166,6 +176,11 @@ const DrinkTableRow = ({ data, isCreating, handleCreate, handleCancelCreate, ref
       <TableCell>
         <button onClick={handleSave}>{(isEditing || isCreating) ? '저장' : '수정'}</button>
         {(isEditing || isCreating) && <button onClick={handleCancel}>취소</button>}
+      </TableCell>
+      <TableCell>
+        {(!isEditing && !isCreating) &&
+          <button onClick={handleDelete}>삭제</button>
+        }
       </TableCell>
     </TableRow>
   )
